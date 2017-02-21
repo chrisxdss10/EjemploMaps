@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title>Localizando</title>
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?v3"></script>
+</head>
+<body>
+	<div id="mapa" style="width: 700px; height: 500px;"><h2>Imagina un mapa aquí UuU</h2></div>
+
+	<script type="text/javascript">
+		
+		var divMapa= document.getElementById('mapa');
+		navigator.geolocation.getCurrentPosition(functionOk, functionNel);
+		
+		function functionOk(respuesta){
+			//divMapa.innerHTML= 'Te tenemos en la mira bro';
+			var lat= respuesta.coords.latitude;
+			var lon= respuesta.coords.longitude;
+
+			var gLatLon= new google.maps.LatLng(lat, lon);
+			
+			var objConfig={
+				zoom:17,
+				center:gLatLon
+			}
+			
+			var gMap= new google.maps.Map(divMapa, objConfig);
+
+			var objConfigMarker={
+				position:gLatLon,
+				animation: google.maps.Animation.DROP,
+				draggable:true,
+				map: gMap,
+				title:"Tu ubicación jeje"
+			}
+
+			var gMarker = new google.maps.Marker(objConfigMarker);
+
+
+			var gCoder= new google.maps.Geocoder();
+
+			var objInformacion={
+				address: 'Av. Primero de Mayo 14A, INFONAVIT Nte, 54720 Cuautitlán Izcalli, Méx.'
+			}
+
+			gCoder.geocode(objInformacion, fnCoder);
+
+			function fnCoder(datos){
+				var coordenadas= datos[0].geometry.location; //obj LatLong
+
+				var config={
+					map: gMap,
+					position:coordenadas,
+					title: 'Centro cool #1'
+				}
+
+				var gMarkerDV = new google.maps.Marker(config)
+/*cambiando iconos*/gMarkerDV.setIcon('https://image.flaticon.com/icons/png/128/91/91544.png');
+
+//info Window
+				var objHTML= {
+					content:'<div style= "height:150px;width:300px;"><h2>Centro cool #1</h2></div>'
+				}
+				var gIW= new google.maps.InfoWindow(objHTML);
+				google.maps.event.addListener(gMarkerDV,'click', function(){gIW.open(gMap,gMarkerDV);})
+			}
+		}
+
+
+//ubicacion no permitida
+		function functionNel(){
+			
+			var gCoder= new google.maps.Geocoder();
+
+			var objInformacion={
+				address: 'CDMX'
+			}
+
+			gCoder.geocode(objInformacion, fnCoder);
+
+			function fnCoder(datos){
+				var coordenadas= datos[0].geometry.location; //obj LatLong
+
+				var objConfig={
+					zoom:9,
+					center:coordenadas
+				}
+			
+				var gMap= new google.maps.Map(divMapa, objConfig);
+			}
+
+			
+		}
+		
+
+	</script>
+	
+</body>
+</html>
